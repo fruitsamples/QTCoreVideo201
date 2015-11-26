@@ -4,10 +4,8 @@
 
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
+	#import <OpenGL/OpenGL.h>
 	#import <QTKit/QTKit.h>
+	#import <QuickTime/QuickTime.h>
+    #import <QuartzCore/QuartzCore.h>
 #endif
-
-#import <QuickTime/QuickTime.h>
-#import <OpenGL/OpenGL.h>
-#import <OpenGL/gl.h>
-#import <OpenGL/glu.h>
