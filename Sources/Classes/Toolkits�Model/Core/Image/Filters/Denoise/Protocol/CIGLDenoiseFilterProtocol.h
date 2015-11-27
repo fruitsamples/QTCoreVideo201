@@ -1,17 +1,15 @@
 //---------------------------------------------------------------------------
 //
-//	File: CVGLImagebuffer.h
+//	File: CIGLDenoiseFilterProtocol.h
 //
-//  Abstract: A facade for managing Core Video image buffer references
-//            with OpenGL PBO, FBO, texture range, or texture 2D backing 
-//            stores.
+// Abstract: Utility class for managing Core Image denoise filters.
 // 			 
-//  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
-//  Computer, Inc. ("Apple") in consideration of your agreement to the
-//  following terms, and your use, installation, modification or
-//  redistribution of this Apple software constitutes acceptance of these
-//  terms.  If you do not agree with these terms, please do not use,
-//  install, modify or redistribute this Apple software.
+//  Disclaimer: IMPORTANT:  This Apple software is supplied to you by
+//  Inc. ("Apple") in consideration of your agreement to the following terms, 
+//  and your use, installation, modification or redistribution of this Apple 
+//  software constitutes acceptance of these terms.  If you do not agree with 
+//  these terms, please do not use, install, modify or redistribute this 
+//  Apple software.
 //  
 //  In consideration of your agreement to abide by the following terms, and
 //  subject to these terms, Apple grants you a personal, non-exclusive
@@ -21,10 +19,10 @@
 //  provided that if you redistribute the Apple Software in its entirety and
 //  without modifications, you must retain this notice and the following
 //  text and disclaimers in all such redistributions of the Apple Software. 
-//  Neither the name, trademarks, service marks or logos of Apple Computer,
-//  Inc. may be used to endorse or promote products derived from the Apple
-//  Software without specific prior written permission from Apple.  Except
-//  as expressly stated in this notice, no other rights or licenses, express
+//  Neither the name, trademarks, service marks or logos of Apple Inc. may 
+//  be used to endorse or promote products derived from the Apple Software 
+//  without specific prior written permission from Apple.  Except as 
+//  expressly stated in this notice, no other rights or licenses, express
 //  or implied, are granted by Apple herein, including but not limited to
 //  any patent rights that may be infringed by your derivative works or by
 //  other works in which the Apple Software may be incorporated.
@@ -50,50 +48,51 @@
 
 //---------------------------------------------------------------------------
 
-typedef struct CVGLImagebufferData *CVGLImagebufferDataRef;
+@protocol CIGLDenoiseFilterProtocol<NSObject>
 
-//---------------------------------------------------------------------------
+// Accessors for texture
 
-@interface CVGLImagebuffer : NSObject
-{
-    @private
-        CVGLImagebufferDataRef mpImagebuffer;
-} // CVGLImagebuffer
-
-- (id) initImagebufferWithSize:(const NSSize *)theSize;
-
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat;
-
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat
-                          hint:(const GLenum)theHint;
-
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat
-                          hint:(const GLenum)theHint
-                       mipmaps:(const BOOL)hasMipmaps;
-
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                         usage:(const GLenum)theUsage
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat;
-
-- (GLenum) format;
 - (GLenum) target;
+- (GLfloat) aspect;
 
-- (GLuint) width;
-- (GLuint) height;
+// Accessors for bound & size
+
+- (CGRect) extent;
+- (CGSize) size;
+
+// Accessors for [noise reduction] filter
+
+- (BOOL) setSharpness:(const CGFloat)theSharpness;
+- (BOOL) setNoiseLevel:(const CGFloat)theNoiseLevel;
+
+// For accessing denoised image
 
 - (void) bind;
 - (void) unbind;
 
-- (BOOL) setSize:(const NSSize *)theSize;
+// Displaying the denoised image bound to a quad
 
-- (void) update:(CVImageBufferRef)theImageBuffer;
+- (void) display;
+
+// Updating the framebuffer
+
+- (void) update;
+
+// Getting a snapshot of the framebuffer
+
+- (BOOL) readback;
+
+- (CGImageRef) snapshot;
+
+// Saving a framebuffer's snapshot
+
+- (BOOL) saveAs:(CFStringRef)theName
+         UTType:(CFStringRef)theUTType;
+
+// Updating the context with a file or data
+
+- (BOOL) updateWithData:(NSData *)theImageData;
+- (BOOL) updateFromFile:(NSString *)theImageFile;
 
 @end
 

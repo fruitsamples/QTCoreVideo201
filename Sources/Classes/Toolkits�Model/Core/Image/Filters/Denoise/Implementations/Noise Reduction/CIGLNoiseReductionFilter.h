@@ -1,17 +1,15 @@
 //---------------------------------------------------------------------------
 //
-//	File: CVGLImagebuffer.h
+//	File: CIGLNosieReductionFilter.h
 //
-//  Abstract: A facade for managing Core Video image buffer references
-//            with OpenGL PBO, FBO, texture range, or texture 2D backing 
-//            stores.
+// Abstract: Utility class for managing Core Image noise reduction filter.
 // 			 
-//  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
-//  Computer, Inc. ("Apple") in consideration of your agreement to the
-//  following terms, and your use, installation, modification or
-//  redistribution of this Apple software constitutes acceptance of these
-//  terms.  If you do not agree with these terms, please do not use,
-//  install, modify or redistribute this Apple software.
+//  Disclaimer: IMPORTANT:  This Apple software is supplied to you by
+//  Inc. ("Apple") in consideration of your agreement to the following terms, 
+//  and your use, installation, modification or redistribution of this Apple 
+//  software constitutes acceptance of these terms.  If you do not agree with 
+//  these terms, please do not use, install, modify or redistribute this 
+//  Apple software.
 //  
 //  In consideration of your agreement to abide by the following terms, and
 //  subject to these terms, Apple grants you a personal, non-exclusive
@@ -21,10 +19,10 @@
 //  provided that if you redistribute the Apple Software in its entirety and
 //  without modifications, you must retain this notice and the following
 //  text and disclaimers in all such redistributions of the Apple Software. 
-//  Neither the name, trademarks, service marks or logos of Apple Computer,
-//  Inc. may be used to endorse or promote products derived from the Apple
-//  Software without specific prior written permission from Apple.  Except
-//  as expressly stated in this notice, no other rights or licenses, express
+//  Neither the name, trademarks, service marks or logos of Apple Inc. may 
+//  be used to endorse or promote products derived from the Apple Software 
+//  without specific prior written permission from Apple.  Except as 
+//  expressly stated in this notice, no other rights or licenses, express
 //  or implied, are granted by Apple herein, including but not limited to
 //  any patent rights that may be infringed by your derivative works or by
 //  other works in which the Apple Software may be incorporated.
@@ -50,50 +48,42 @@
 
 //---------------------------------------------------------------------------
 
-typedef struct CVGLImagebufferData *CVGLImagebufferDataRef;
+#import "CIGLDenoiseFilterProtocol.h"
+#import "CIGLFilter.h"
 
 //---------------------------------------------------------------------------
 
-@interface CVGLImagebuffer : NSObject
+//---------------------------------------------------------------------------
+
+@interface CIGLNoiseReductionFilter : CIGLFilter<CIGLDenoiseFilterProtocol>
 {
     @private
-        CVGLImagebufferDataRef mpImagebuffer;
-} // CVGLImagebuffer
+        NSNumber *inputs[2];
+} // CIGLNoiseReductionFilter
 
-- (id) initImagebufferWithSize:(const NSSize *)theSize;
+// Designaterd initializers
 
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat;
+- (id) initNoiseReductionFilterFromFile:(NSString *)thePathname
+                                context:(NSOpenGLContext *)theContext
+                                 format:(NSOpenGLPixelFormat *)theFormat;
 
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat
-                          hint:(const GLenum)theHint;
+- (id) initNoiseReductionFilterWithData:(NSData *)theData
+                                context:(NSOpenGLContext *)theContext
+                                 format:(NSOpenGLPixelFormat *)theFormat;
 
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat
-                          hint:(const GLenum)theHint
-                       mipmaps:(const BOOL)hasMipmaps;
+// Accessors for the filter
 
-- (id) initImagebufferWithSize:(const NSSize *)theSize
-                         usage:(const GLenum)theUsage
-                        target:(const GLenum)theTarget
-                        format:(const GLenum)theFormat;
+- (BOOL) setSharpness:(const CGFloat)theSharpness;
+- (BOOL) setNoiseLevel:(const CGFloat)theNoiseLevel;
 
-- (GLenum) format;
-- (GLenum) target;
+// Updating the framebuffer
 
-- (GLuint) width;
-- (GLuint) height;
+- (void) update;
 
-- (void) bind;
-- (void) unbind;
+// Updating the context with a file or data
 
-- (BOOL) setSize:(const NSSize *)theSize;
-
-- (void) update:(CVImageBufferRef)theImageBuffer;
+- (BOOL) updateWithData:(NSData *)theImageData;
+- (BOOL) updateFromFile:(NSString *)theImageFile;
 
 @end
 
